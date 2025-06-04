@@ -60,15 +60,21 @@ export default function SocialSidebar() {
 
   return (
     <motion.aside
-      // Posisi sedikit ke atas dari tengah:
-      // Menggunakan top calc(50% - offset) untuk mendorong titik tengahnya ke atas
-      // Misalnya, 60px lebih tinggi dari tengah absolut.
-      className="fixed right-4 top-[calc(50%-60px)] transform -translate-y-1/2 z-40 hidden lg:block"
+      // Fixed positioning yang lebih konsisten:
+      // - Desktop: di kanan, benar-benar di tengah vertikal
+      // - Mobile: di kanan bawah agar tidak menghalangi konten
+      className="fixed right-2 top-1/4 -translate-y-1/4 z-40 
+                 sm:right-4 
+                 max-sm:top-auto max-sm:bottom-4 max-sm:translate-y-0"
       initial={{ x: 100, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ duration: 0.5, delay: 1.2 }} // Sedikit delay agar tidak bersamaan dengan elemen lain
     >
-      <div className="flex flex-col gap-2.5 bg-slate-900/80 backdrop-blur-md rounded-lg border border-slate-700/70 p-2.5 shadow-xl">
+      <div
+        className="flex flex-col gap-2 bg-slate-900/90 backdrop-blur-md rounded-lg border border-slate-700/70 p-2 shadow-xl
+                      sm:gap-2.5 sm:p-2.5
+                      max-sm:bg-slate-900/95"
+      >
         {socialLinks.map((link, index) => {
           const CurrentIcon = link.Icon; // Ambil komponen ikon
           return (
@@ -78,7 +84,9 @@ export default function SocialSidebar() {
               target="_blank"
               rel="noopener noreferrer"
               title={link.label} // Menambah title untuk aksesibilitas
-              className={`p-2.5 rounded-md bg-slate-800/60 transition-all duration-200 ${link.hoverBgClass} group relative flex items-center justify-center`}
+              className={`p-2 rounded-md bg-slate-800/60 transition-all duration-200 ${link.hoverBgClass} group relative flex items-center justify-center
+                         sm:p-2.5
+                         active:scale-95`} // Tambah active state untuk mobile
               whileHover={{
                 scale: 1.15,
                 transition: { type: "spring", stiffness: 300 },
@@ -92,19 +100,21 @@ export default function SocialSidebar() {
                 stiffness: 120,
               }} // Delay disesuaikan dengan parent
             >
-              {/* Render ikon dengan warna spesifik jika iconColor ada, jika tidak, biarkan default */}
+              {/* Render ikon dengan ukuran responsif */}
               <CurrentIcon
-                size={20}
+                size={18} // Sedikit lebih kecil untuk mobile
+                className="sm:w-5 sm:h-5"
                 style={{ color: link.iconColor || "currentColor" }}
               />
 
-              {/* Tooltip yang lebih elegan */}
+              {/* Tooltip yang hanya muncul di desktop */}
               <span
                 className="absolute right-full mr-3.5 top-1/2 transform -translate-y-1/2
                            bg-slate-800 text-slate-200 text-xs
                            px-3 py-1.5 rounded-md shadow-lg
                            opacity-0 group-hover:opacity-100 transition-opacity duration-300
-                           whitespace-nowrap border border-slate-700 pointer-events-none"
+                           whitespace-nowrap border border-slate-700 pointer-events-none
+                           hidden sm:block"
               >
                 {link.label}
                 <ExternalLink size={12} className="inline ml-1.5 opacity-70" />
