@@ -2,12 +2,12 @@
 
 import { useEffect, useState, useRef } from "react";
 import { motion } from "framer-motion";
-// import Header from "./header"; // Assuming Header component exists - Commented out for now
-import { Code2, Menu, X } from "lucide-react"; // Added Menu and X for placeholder header
+import { Code2, Menu, X } from "lucide-react";
 
-// Placeholder Header Component
+// Responsive Header Component
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
+
   return (
     <header className="absolute top-0 left-0 right-0 z-20 p-4">
       <div className="container mx-auto flex justify-between items-center">
@@ -98,8 +98,8 @@ export default function Hero() {
   const fullText = "> Hello, I'm Muhammad Alvin Faris";
   const [showCursor, setShowCursor] = useState(true);
   const [typingComplete, setTypingComplete] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null); // For main section animation
-  const codeBlockRef = useRef<HTMLDivElement>(null); // For code block animation
+  const containerRef = useRef<HTMLDivElement>(null);
+  const codeBlockRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let i = 0;
@@ -121,14 +121,14 @@ export default function Hero() {
       clearInterval(typingInterval);
       clearInterval(cursorInterval);
     };
-  }, []);
+  }, [fullText]);
 
   const subtitleVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
-        delay: 0.5, // Adjusted delay to appear after main typing
+        delay: 0.5,
         staggerChildren: 0.08,
       },
     },
@@ -145,7 +145,6 @@ export default function Hero() {
 
   const subtitle = "Full Stack Developer & Tech Enthusiast";
 
-  // New code lines for the bio, in TypeScript
   const bioCodeLines = [
     "interface StudentDeveloper {",
     "  university: string;",
@@ -158,48 +157,42 @@ export default function Hero() {
     "const alvin: StudentDeveloper = {",
     "  university: 'Universitas Indraprasta PGRI',",
     "  semester: 4,",
-    "  passion: ['Web Development', 'Digital Innovation', 'Software Engineering'],",
-    "  focus: ['Responsive Websites', 'User-Friendly Applications'],",
-    "  learningGoal: 'Continuously explore new technologies',",
+    "  passion: ['Web Dev', 'Innovation', 'Software Eng'],", // Shortened for mobile
+    "  focus: ['Responsive Websites', 'User-Friendly Apps'],", // Shortened for mobile
+    "  learningGoal: 'Continuously explore new tech',", // Shortened for mobile
     "};",
     "",
     "// Crafting digital experiences with code",
-    "console.log(`Studying at ${alvin.university}, semester ${alvin.semester}.`);",
+    "console.log(`Studying at ${alvin.university}`);", // Simplified for brevity
   ];
 
-  // Framer Motion variants for the code block section
   const codeBlockSectionVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
       opacity: 1,
       y: 0,
       transition: {
-        delay: typingComplete ? 1.5 : 3.5, // Delay after subtitle or main typing
+        delay: typingComplete ? 1.5 : 3.5,
         duration: 0.8,
       },
     },
   };
 
-  // Framer Motion variants for individual code lines
   const codeLineVariants = {
     hidden: { opacity: 0, x: -20 },
     visible: (i: number) => ({
-      // Custom prop 'i' for staggered delay
       opacity: 1,
       x: 0,
       transition: {
-        delay: i * 0.07, // Stagger delay for each line
+        delay: i * 0.07,
         duration: 0.4,
       },
     }),
   };
 
   return (
-    <section className="relative min-h-screen flex flex-col justify-center items-center overflow-hidden p-4 pt-20 md:pt-4">
-      {" "}
-      {/* Added padding-top for header */}
+    <section className="relative min-h-screen flex flex-col justify-center items-center overflow-hidden p-4 pt-24 md:pt-20">
       <Header />
-      {/* Background Gradient */}
       <div className="absolute inset-0 z-0">
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/60 to-black"></div>
       </div>
@@ -210,10 +203,11 @@ export default function Hero() {
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
       >
-        <div className="max-w-3xl mx-auto">
-          {/* Typing Text */}
-          <div className="mb-6 inline-block bg-black/60 backdrop-blur-md p-4 rounded-lg border border-green-500/40 shadow-lg shadow-green-500/10">
-            <h1 className="text-3xl md:text-5xl font-bold mb-2 font-mono text-green-400">
+        <div className="max-w-4xl mx-auto">
+          {/* Typing Text Container */}
+          <div className="mb-6 inline-block bg-black/60 backdrop-blur-md p-3 sm:p-4 rounded-lg border border-green-500/40 shadow-lg shadow-green-500/10">
+            {/* Responsive Typing Text */}
+            <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-2 font-mono text-green-400">
               {text}
               <span
                 className={`${
@@ -227,7 +221,7 @@ export default function Hero() {
             {/* Subtitle */}
             {typingComplete && (
               <motion.h2
-                className="text-xl md:text-2xl text-purple-300 mt-4"
+                className="text-base sm:text-lg md:text-2xl text-purple-300 mt-4"
                 variants={subtitleVariants}
                 initial="hidden"
                 animate="visible"
@@ -242,10 +236,10 @@ export default function Hero() {
           </div>
 
           {/* Bio Code Block Section */}
-          {typingComplete && ( // Show this section after typing is complete
+          {typingComplete && (
             <motion.div
               ref={codeBlockRef}
-              className="mt-8 max-w-2xl mx-auto bg-gray-900/80 backdrop-blur-sm rounded-lg border border-green-500/30 p-4 overflow-hidden shadow-xl shadow-green-500/10"
+              className="mt-8 max-w-xs sm:max-w-md md:max-w-2xl mx-auto bg-gray-900/80 backdrop-blur-sm rounded-lg border border-green-500/30 p-4 overflow-hidden shadow-xl shadow-green-500/10"
               variants={codeBlockSectionVariants}
               initial="hidden"
               animate="visible"
@@ -254,43 +248,34 @@ export default function Hero() {
                 <Code2 className="text-green-400 mr-2" size={18} />
                 <span className="text-gray-400 text-xs">bio.ts</span>
               </div>
-
               <div className="font-mono text-xs md:text-sm text-left max-h-60 overflow-y-auto scrollbar-thin scrollbar-thumb-green-700 scrollbar-track-gray-800">
-                {" "}
-                {/* Text-left for code alignment, max-height and scroll */}
                 {bioCodeLines.map((line, index) => (
                   <motion.div
                     key={index}
                     className="flex"
-                    custom={index} // Pass index to variants for staggered delay
+                    custom={index}
                     variants={codeLineVariants}
-                    // initial="hidden" // Already handled by parent
-                    // animate="visible" // Already handled by parent
                   >
-                    <span className="text-gray-500 mr-3 select-none w-6 text-right shrink-0">
-                      {" "}
-                      {/* shrink-0 for line numbers */}
+                    <span className="text-gray-500 mr-3 select-none w-5 text-right shrink-0">
                       {index + 1}
                     </span>
                     <span
                       className={`whitespace-pre ${
-                        // whitespace-pre to preserve indentation
-                        // TypeScript Syntax Highlighting (simplified)
                         line.match(
                           /\b(interface|const|let|var|string|number|boolean|string\[\])\b/g
                         )
-                          ? "text-purple-400" // Keywords and types
+                          ? "text-purple-400"
                           : line.match(
                               /\b(university|semester|passion|focus|learningGoal|alvin)\b/g
                             ) && !line.includes("'")
-                          ? "text-blue-300" // Variable/property names
+                          ? "text-blue-300"
                           : line.includes("'")
-                          ? "text-green-300" // Strings
+                          ? "text-green-300"
                           : line.startsWith("//")
-                          ? "text-gray-500 italic" // Comments
+                          ? "text-gray-500 italic"
                           : line.match(/({|}|\[|\]|=|:|,|;)/g)
-                          ? "text-yellow-400" // Operators and punctuation
-                          : "text-gray-200" // Default text color
+                          ? "text-yellow-400"
+                          : "text-gray-200"
                       }`}
                     >
                       {line}
@@ -306,10 +291,10 @@ export default function Hero() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: typingComplete ? 2.5 : 4, duration: 0.8 }} // Delay after code block or subtitle
+              transition={{ delay: typingComplete ? 2.5 : 4, duration: 0.8 }}
             >
               <motion.button
-                className="mt-8 px-6 py-3 bg-green-500 text-black font-bold rounded-md hover:bg-green-400 transition-colors relative overflow-hidden group"
+                className="mt-8 px-6 py-3 bg-green-500 text-black font-bold rounded-md hover:bg-green-400 transition-colors relative overflow-hidden group text-sm sm:text-base"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => {
@@ -332,27 +317,19 @@ export default function Hero() {
           className="absolute bottom-10 left-1/2 transform -translate-x-1/2"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: typingComplete ? 3 : 4.5, duration: 1 }} // Delay after button or code block
+          transition={{ delay: typingComplete ? 3 : 4.5, duration: 1 }}
         >
-          <motion.div
-            className="w-6 h-10 border-2 border-green-500 rounded-full flex justify-center items-start pt-1" // Adjusted for inner dot position
-            animate={{ y: [0, 8, 0] }} // Slightly adjusted animation
-            transition={{
-              repeat: Number.POSITIVE_INFINITY,
-              duration: 1.5,
-              ease: "easeInOut",
-            }}
-          >
+          <div className="w-6 h-10 border-2 border-green-500 rounded-full flex justify-center items-start pt-1">
             <motion.div
-              className="w-1 h-2 bg-green-500 rounded-full" // Smaller, more defined dot
-              animate={{ opacity: [0.5, 1, 0.5] }} // Fade in/out
+              className="w-1 h-2 bg-green-500 rounded-full"
+              animate={{ y: [0, 8, 0], opacity: [0.5, 1, 0.5] }}
               transition={{
                 repeat: Number.POSITIVE_INFINITY,
                 duration: 1.5,
                 ease: "easeInOut",
               }}
             />
-          </motion.div>
+          </div>
         </motion.div>
       )}
     </section>

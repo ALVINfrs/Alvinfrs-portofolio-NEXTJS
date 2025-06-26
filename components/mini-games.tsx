@@ -1,15 +1,28 @@
-"use client"
+"use client";
 
-import { useState, useRef, useEffect, useCallback } from "react"
-import { motion, useInView } from "framer-motion"
-import { Play, RotateCcw, Trophy, Gamepad2, Target } from "lucide-react"
+import { useState, useRef, useEffect, useCallback } from "react";
+import { motion, useInView } from "framer-motion";
+import {
+  Play,
+  RotateCcw,
+  Trophy,
+  Gamepad2,
+  Target,
+  ArrowUp,
+  ArrowDown,
+  ArrowLeft,
+  ArrowRight,
+} from "lucide-react";
 
+// This is the main component that holds both games.
 export default function MiniGames() {
-  const containerRef = useRef<HTMLDivElement>(null)
-  const isInView = useInView(containerRef, { once: false, amount: 0.2 })
+  const containerRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(containerRef, { once: false, amount: 0.2 });
 
   return (
-    <section id="games" className="py-20 relative">
+    <section id="games" className="py-20 relative text-white">
+      {/* Background Gradients */}
+      <div className="absolute inset-0 bg-gray-900 z-0"></div>
       <div className="absolute inset-0 bg-gradient-to-b from-gray-900/0 via-gray-900/80 to-gray-900/0 z-0"></div>
 
       <motion.div
@@ -44,7 +57,8 @@ export default function MiniGames() {
             animate={isInView ? { opacity: 1 } : { opacity: 0 }}
             transition={{ duration: 0.5, delay: 0.4 }}
           >
-            Interactive coding games built with React - test your developer skills!
+            Interactive coding games built with React - test your developer
+            skills!
           </motion.p>
         </div>
 
@@ -54,60 +68,61 @@ export default function MiniGames() {
         </div>
       </motion.div>
     </section>
-  )
+  );
 }
 
+// Memory Game Component
 function CodeMemoryGame() {
-  const [cards, setCards] = useState<string[]>([])
-  const [flipped, setFlipped] = useState<number[]>([])
-  const [matched, setMatched] = useState<number[]>([])
-  const [moves, setMoves] = useState(0)
-  const [gameWon, setGameWon] = useState(false)
+  const [cards, setCards] = useState<string[]>([]);
+  const [flipped, setFlipped] = useState<number[]>([]);
+  const [matched, setMatched] = useState<number[]>([]);
+  const [moves, setMoves] = useState(0);
+  const [gameWon, setGameWon] = useState(false);
 
   // Developer-themed card pairs
-  const devIcons = ["⚛️", "🟨", "🟢", "🔷", "🟣", "🔶", "⚡", "🔥"]
+  const devIcons = ["⚛️", "🟨", "🟢", "🔷", "🟣", "🔶", "⚡", "🔥"];
 
-  const initializeGame = () => {
-    const shuffled = [...devIcons, ...devIcons].sort(() => Math.random() - 0.5)
-    setCards(shuffled)
-    setFlipped([])
-    setMatched([])
-    setMoves(0)
-    setGameWon(false)
-  }
+  const initializeGame = useCallback(() => {
+    const shuffled = [...devIcons, ...devIcons].sort(() => Math.random() - 0.5);
+    setCards(shuffled);
+    setFlipped([]);
+    setMatched([]);
+    setMoves(0);
+    setGameWon(false);
+  }, []);
 
   useEffect(() => {
-    initializeGame()
-  }, [])
+    initializeGame();
+  }, [initializeGame]);
 
   useEffect(() => {
     if (flipped.length === 2) {
-      const [first, second] = flipped
+      const [first, second] = flipped;
       if (cards[first] === cards[second]) {
-        setMatched((prev) => [...prev, first, second])
-        setFlipped([])
-        // Success sound effect simulation
-        console.log("🎵 Match sound!")
+        setMatched((prev) => [...prev, first, second]);
+        setFlipped([]);
       } else {
-        setTimeout(() => setFlipped([]), 1000)
+        setTimeout(() => setFlipped([]), 1000);
       }
-      setMoves((prev) => prev + 1)
+      setMoves((prev) => prev + 1);
     }
-  }, [flipped, cards])
+  }, [flipped, cards]);
 
   useEffect(() => {
-    if (matched.length === cards.length && cards.length > 0) {
-      setGameWon(true)
-      console.log("🎵 Victory sound!")
+    if (matched.length > 0 && matched.length === cards.length) {
+      setGameWon(true);
     }
-  }, [matched, cards])
+  }, [matched, cards]);
 
   const handleCardClick = (index: number) => {
-    if (flipped.length < 2 && !flipped.includes(index) && !matched.includes(index)) {
-      setFlipped((prev) => [...prev, index])
-      console.log("🎵 Card flip sound!")
+    if (
+      flipped.length < 2 &&
+      !flipped.includes(index) &&
+      !matched.includes(index)
+    ) {
+      setFlipped((prev) => [...prev, index]);
     }
-  }
+  };
 
   return (
     <motion.div
@@ -122,7 +137,9 @@ function CodeMemoryGame() {
           <h3 className="text-xl font-bold text-white">Code Memory</h3>
         </div>
         <div className="flex items-center gap-4">
-          <span className="text-sm text-gray-400 bg-gray-700/50 px-3 py-1 rounded-full">Moves: {moves}</span>
+          <span className="text-sm text-gray-400 bg-gray-700/50 px-3 py-1 rounded-full">
+            Moves: {moves}
+          </span>
           <motion.button
             onClick={initializeGame}
             className="p-2 bg-green-600 hover:bg-green-700 rounded-lg transition-colors"
@@ -142,7 +159,9 @@ function CodeMemoryGame() {
           transition={{ type: "spring", stiffness: 200 }}
         >
           <Trophy className="inline-block mr-2 text-yellow-400" size={24} />
-          <span className="text-green-400 font-bold text-lg">🎉 ACCESS GRANTED! Completed in {moves} moves!</span>
+          <span className="text-green-400 font-bold text-lg">
+            🎉 ACCESS GRANTED! Completed in {moves} moves!
+          </span>
         </motion.div>
       )}
 
@@ -156,264 +175,341 @@ function CodeMemoryGame() {
                 : "bg-gradient-to-br from-gray-700 to-gray-800 border-gray-600 hover:border-gray-500 hover:shadow-lg"
             }`}
             onClick={() => handleCardClick(index)}
-            whileHover={{ scale: 1.05, rotateY: 5 }}
+            whileHover={{ scale: 1.05, y: -5 }}
             whileTap={{ scale: 0.95 }}
-            animate={flipped.includes(index) || matched.includes(index) ? { rotateY: [0, 180, 360] } : {}}
+            animate={{
+              rotateY:
+                flipped.includes(index) || matched.includes(index) ? 180 : 0,
+            }}
             transition={{ duration: 0.6 }}
+            style={{ transformStyle: "preserve-3d" }}
           >
-            {flipped.includes(index) || matched.includes(index) ? (
-              <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.2 }}>
+            <div
+              className="absolute inset-0 flex items-center justify-center"
+              style={{
+                backfaceVisibility: "hidden",
+                transform: "rotateY(180deg)",
+              }}
+            >
+              <motion.span
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.2 }}
+              >
                 {card}
               </motion.span>
-            ) : (
-              <span className="text-gray-500">💻</span>
-            )}
+            </div>
+            <div
+              className="absolute inset-0 flex items-center justify-center text-gray-500"
+              style={{ backfaceVisibility: "hidden" }}
+            >
+              💻
+            </div>
           </motion.div>
         ))}
       </div>
 
       <div className="mt-4 text-center">
-        <p className="text-gray-400 text-sm">Match the developer tools to unlock access! 🔓</p>
+        <p className="text-gray-400 text-sm">
+          Match the developer tools to unlock access! 🔓
+        </p>
       </div>
     </motion.div>
-  )
+  );
 }
 
+// Snake Game Component
 function SnakeGame() {
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-  const [gameStarted, setGameStarted] = useState(false)
-  const [score, setScore] = useState(0)
-  const [gameOver, setGameOver] = useState(false)
-  const [snake, setSnake] = useState([{ x: 10, y: 10 }])
-  const [food, setFood] = useState({ x: 15, y: 15 })
-  const [direction, setDirection] = useState({ x: 0, y: 0 })
-  const [highScore, setHighScore] = useState(0)
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [gameStarted, setGameStarted] = useState(false);
+  const [score, setScore] = useState(0);
+  const [gameOver, setGameOver] = useState(false);
+  const [snake, setSnake] = useState([{ x: 10, y: 10 }]);
+  const [food, setFood] = useState({ x: 15, y: 15 });
+  const [direction, setDirection] = useState({ x: 0, y: 0 });
+  const [highScore, setHighScore] = useState(0);
 
-  const GRID_SIZE = 20
-  const CANVAS_SIZE = 400
+  const GRID_SIZE = 20;
+  const CANVAS_SIZE = 400;
 
-  // Game logic
   const moveSnake = useCallback(() => {
-    if (!gameStarted || gameOver) return
+    if (!gameStarted || gameOver) return;
 
     setSnake((currentSnake) => {
-      const newSnake = [...currentSnake]
-      const head = { ...newSnake[0] }
+      const newSnake = [...currentSnake];
+      const head = { ...newSnake[0] };
 
-      head.x += direction.x
-      head.y += direction.y
+      head.x += direction.x;
+      head.y += direction.y;
 
-      // Check wall collision
-      if (head.x < 0 || head.x >= GRID_SIZE || head.y < 0 || head.y >= GRID_SIZE) {
-        setGameOver(true)
-        console.log("🎵 Game over sound!")
-        return currentSnake
+      if (
+        head.x < 0 ||
+        head.x >= GRID_SIZE ||
+        head.y < 0 ||
+        head.y >= GRID_SIZE
+      ) {
+        setGameOver(true);
+        return currentSnake;
       }
 
-      // Check self collision
-      if (newSnake.some((segment) => segment.x === head.x && segment.y === head.y)) {
-        setGameOver(true)
-        return currentSnake
+      for (let i = 1; i < newSnake.length; i++) {
+        if (head.x === newSnake[i].x && head.y === newSnake[i].y) {
+          setGameOver(true);
+          return currentSnake;
+        }
       }
 
-      newSnake.unshift(head)
+      newSnake.unshift(head);
 
-      // Check food collision
       if (head.x === food.x && head.y === food.y) {
         setScore((prev) => {
-          const newScore = prev + 10
-          if (newScore > highScore) {
-            setHighScore(newScore)
-          }
-          return newScore
-        })
-        setFood({
-          x: Math.floor(Math.random() * GRID_SIZE),
-          y: Math.floor(Math.random() * GRID_SIZE),
-        })
-        console.log("🎵 Eat sound!")
+          const newScore = prev + 10;
+          if (newScore > highScore) setHighScore(newScore);
+          return newScore;
+        });
+
+        let newFoodPosition: { x: number; y: number };
+        do {
+          newFoodPosition = {
+            x: Math.floor(Math.random() * GRID_SIZE),
+            y: Math.floor(Math.random() * GRID_SIZE),
+          };
+        } while (
+          newSnake.some(
+            (segment) =>
+              segment.x === newFoodPosition.x && segment.y === newFoodPosition.y
+          )
+        );
+        setFood(newFoodPosition);
       } else {
-        newSnake.pop()
+        newSnake.pop();
       }
 
-      return newSnake
-    })
-  }, [direction, food, gameStarted, gameOver, highScore])
+      return newSnake;
+    });
+  }, [direction, food, gameStarted, gameOver, highScore]);
 
-  // Keyboard controls
+  const handleDirectionChange = useCallback(
+    (newDirection: { x: number; y: number }) => {
+      if (direction.y === 0 && newDirection.y !== 0) setDirection(newDirection);
+      if (direction.x === 0 && newDirection.x !== 0) setDirection(newDirection);
+    },
+    [direction]
+  );
+
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
-      if (!gameStarted) return
-
+      if (!gameStarted) return;
       switch (e.key) {
         case "ArrowUp":
-          if (direction.y === 0) setDirection({ x: 0, y: -1 })
-          break
+          handleDirectionChange({ x: 0, y: -1 });
+          break;
         case "ArrowDown":
-          if (direction.y === 0) setDirection({ x: 0, y: 1 })
-          break
+          handleDirectionChange({ x: 0, y: 1 });
+          break;
         case "ArrowLeft":
-          if (direction.x === 0) setDirection({ x: -1, y: 0 })
-          break
+          handleDirectionChange({ x: -1, y: 0 });
+          break;
         case "ArrowRight":
-          if (direction.x === 0) setDirection({ x: 1, y: 0 })
-          break
+          handleDirectionChange({ x: 1, y: 0 });
+          break;
       }
+    };
+    window.addEventListener("keydown", handleKeyPress);
+    return () => window.removeEventListener("keydown", handleKeyPress);
+  }, [gameStarted, handleDirectionChange]);
+
+  useEffect(() => {
+    if (!gameStarted || gameOver) return;
+    const gameInterval = setInterval(moveSnake, 150);
+    return () => clearInterval(gameInterval);
+  }, [moveSnake, gameStarted, gameOver]);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    ctx.fillStyle = "#111827";
+    ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+
+    ctx.strokeStyle = "#374151";
+    ctx.lineWidth = 0.5;
+    for (let i = 1; i < GRID_SIZE; i++) {
+      const pos = i * (CANVAS_SIZE / GRID_SIZE);
+      ctx.beginPath();
+      ctx.moveTo(pos, 0);
+      ctx.lineTo(pos, CANVAS_SIZE);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(0, pos);
+      ctx.lineTo(CANVAS_SIZE, pos);
+      ctx.stroke();
     }
 
-    window.addEventListener("keydown", handleKeyPress)
-    return () => window.removeEventListener("keydown", handleKeyPress)
-  }, [direction, gameStarted])
-
-  // Game loop
-  useEffect(() => {
-    if (!gameStarted || gameOver) return
-
-    const gameInterval = setInterval(moveSnake, 150)
-    return () => clearInterval(gameInterval)
-  }, [moveSnake, gameStarted, gameOver])
-
-  // Canvas rendering
-  useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-
-    const ctx = canvas.getContext("2d")
-    if (!ctx) return
-
-    // Clear canvas with grid pattern
-    ctx.fillStyle = "#1f2937"
-    ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE)
-
-    // Draw grid
-    ctx.strokeStyle = "#374151"
-    ctx.lineWidth = 1
-    for (let i = 0; i <= GRID_SIZE; i++) {
-      ctx.beginPath()
-      ctx.moveTo(i * (CANVAS_SIZE / GRID_SIZE), 0)
-      ctx.lineTo(i * (CANVAS_SIZE / GRID_SIZE), CANVAS_SIZE)
-      ctx.stroke()
-
-      ctx.beginPath()
-      ctx.moveTo(0, i * (CANVAS_SIZE / GRID_SIZE))
-      ctx.lineTo(CANVAS_SIZE, i * (CANVAS_SIZE / GRID_SIZE))
-      ctx.stroke()
-    }
-
-    // Draw snake
     snake.forEach((segment, index) => {
-      const x = segment.x * (CANVAS_SIZE / GRID_SIZE)
-      const y = segment.y * (CANVAS_SIZE / GRID_SIZE)
-      const size = CANVAS_SIZE / GRID_SIZE - 2
+      ctx.fillStyle = index === 0 ? "#10b981" : "#059669";
+      ctx.fillRect(
+        segment.x * (CANVAS_SIZE / GRID_SIZE),
+        segment.y * (CANVAS_SIZE / GRID_SIZE),
+        CANVAS_SIZE / GRID_SIZE,
+        CANVAS_SIZE / GRID_SIZE
+      );
+    });
 
-      if (index === 0) {
-        // Snake head
-        ctx.fillStyle = "#10b981"
-        ctx.fillRect(x + 1, y + 1, size, size)
-        ctx.fillStyle = "#065f46"
-        ctx.fillRect(x + 3, y + 3, size - 4, size - 4)
-      } else {
-        // Snake body
-        ctx.fillStyle = "#059669"
-        ctx.fillRect(x + 1, y + 1, size, size)
-      }
-    })
-
-    // Draw food
-    const foodX = food.x * (CANVAS_SIZE / GRID_SIZE)
-    const foodY = food.y * (CANVAS_SIZE / GRID_SIZE)
-    const foodSize = CANVAS_SIZE / GRID_SIZE - 2
-
-    ctx.fillStyle = "#ef4444"
-    ctx.fillRect(foodX + 1, foodY + 1, foodSize, foodSize)
-    ctx.fillStyle = "#dc2626"
-    ctx.fillRect(foodX + 3, foodY + 3, foodSize - 4, foodSize - 4)
-  }, [snake, food])
+    const foodCellSize = CANVAS_SIZE / GRID_SIZE;
+    ctx.shadowColor = "#ef4444";
+    ctx.shadowBlur = 10;
+    ctx.fillStyle = "#ef4444";
+    ctx.fillRect(
+      food.x * foodCellSize,
+      food.y * foodCellSize,
+      foodCellSize,
+      foodCellSize
+    );
+    ctx.shadowBlur = 0;
+  }, [snake, food]);
 
   const startGame = () => {
-    setGameStarted(true)
-    setScore(0)
-    setGameOver(false)
-    setSnake([{ x: 10, y: 10 }])
-    setFood({ x: 15, y: 15 })
-    setDirection({ x: 1, y: 0 })
-  }
+    setGameStarted(true);
+    setScore(0);
+    setGameOver(false);
+    setSnake([{ x: 10, y: 10 }]);
+    setFood({ x: 15, y: 15 });
+    setDirection({ x: 1, y: 0 });
+  };
 
   const resetGame = () => {
-    setGameStarted(false)
-    setScore(0)
-    setGameOver(false)
-    setSnake([{ x: 10, y: 10 }])
-    setDirection({ x: 0, y: 0 })
-  }
+    setGameStarted(false);
+    setGameOver(false);
+    setSnake([{ x: 10, y: 10 }]);
+    setDirection({ x: 0, y: 0 });
+  };
 
   return (
     <motion.div
-      className="bg-gray-800/80 backdrop-blur-sm rounded-xl border border-green-500/30 p-6"
+      className="bg-gray-800/80 backdrop-blur-sm rounded-xl border border-green-500/30 p-4 sm:p-6 w-full"
       initial={{ x: 50, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ duration: 0.5, delay: 0.4 }}
     >
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <Gamepad2 className="text-green-400" size={24} />
           <h3 className="text-xl font-bold text-white">Code Snake</h3>
         </div>
-        <div className="flex items-center gap-4">
-          <div className="text-sm text-gray-400">
-            <div>
-              Score: <span className="text-green-400 font-bold">{score}</span>
-            </div>
-            <div>
-              High: <span className="text-yellow-400 font-bold">{highScore}</span>
-            </div>
+        <div className="text-right">
+          <div className="text-lg">
+            <span className="text-gray-400">Score: </span>
+            <span className="text-green-400 font-bold">{score}</span>
           </div>
-          <motion.button
-            onClick={gameStarted ? resetGame : startGame}
-            className="p-2 bg-green-600 hover:bg-green-700 rounded-lg transition-colors"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            {gameStarted ? <RotateCcw size={16} /> : <Play size={16} />}
-          </motion.button>
+          <div className="text-sm">
+            <span className="text-gray-400">High: </span>
+            <span className="text-yellow-400 font-bold">{highScore}</span>
+          </div>
         </div>
       </div>
-
-      {gameOver && (
-        <motion.div
-          className="mb-6 p-4 bg-gradient-to-r from-red-600/20 to-yellow-600/20 border border-red-500 rounded-lg text-center"
-          initial={{ scale: 0, rotate: -10 }}
-          animate={{ scale: 1, rotate: 0 }}
-          transition={{ type: "spring", stiffness: 200 }}
-        >
-          <Trophy className="inline-block mr-2 text-yellow-400" size={24} />
-          <span className="text-red-400 font-bold text-lg">💥 System Crash! Final Score: {score}</span>
-        </motion.div>
-      )}
 
       <div className="relative">
         <canvas
           ref={canvasRef}
           width={CANVAS_SIZE}
           height={CANVAS_SIZE}
-          className="bg-gray-900 rounded-lg border border-gray-600 w-full max-w-md mx-auto shadow-lg"
+          className="bg-gray-900 rounded-lg border border-gray-600 w-full h-auto aspect-square shadow-lg shadow-black/30"
         />
 
-        {!gameStarted && (
+        {(!gameStarted || gameOver) && (
           <div className="absolute inset-0 flex items-center justify-center bg-gray-900/90 rounded-lg">
             <div className="text-center">
-              <Play className="mx-auto mb-3 text-green-400" size={48} />
-              <p className="text-white font-bold mb-2">Ready to Code?</p>
-              <p className="text-gray-400 text-sm">Use arrow keys to navigate</p>
-              <p className="text-green-400 text-xs mt-2">Collect data packets to grow!</p>
+              {gameOver ? (
+                <motion.div
+                  initial={{ scale: 0.5, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  className="p-4"
+                >
+                  <Trophy className="mx-auto mb-3 text-yellow-400" size={48} />
+                  <h3 className="text-2xl text-red-500 font-bold">
+                    System Crash!
+                  </h3>
+                  <p className="text-white font-bold text-lg mb-4">
+                    Final Score: {score}
+                  </p>
+                  <motion.button
+                    onClick={startGame}
+                    className="px-6 py-2 bg-green-600 hover:bg-green-700 rounded-lg transition-colors text-white font-bold flex items-center gap-2 mx-auto"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <RotateCcw size={16} /> Play Again
+                  </motion.button>
+                </motion.div>
+              ) : (
+                <>
+                  <Play className="mx-auto mb-3 text-green-400" size={48} />
+                  <p className="text-white font-bold mb-2">Ready to Deploy?</p>
+                  <motion.button
+                    onClick={startGame}
+                    className="mt-4 px-6 py-2 bg-green-600 hover:bg-green-700 rounded-lg transition-colors text-white font-bold flex items-center gap-2"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <Play size={16} /> Start Game
+                  </motion.button>
+                </>
+              )}
             </div>
           </div>
         )}
       </div>
 
-      <div className="mt-4 text-center">
-        <p className="text-gray-400 text-sm">Navigate through the code matrix! 🐍💻</p>
+      <div className="mt-4 grid grid-cols-3 grid-rows-3 gap-2 max-w-[200px] mx-auto">
+        <div className="col-start-2 row-start-1 flex justify-center">
+          <motion.button
+            onClick={() => handleDirectionChange({ x: 0, y: -1 })}
+            className="p-4 bg-gray-700/80 rounded-lg active:bg-green-500/50"
+            whileTap={{ scale: 0.9 }}
+          >
+            <ArrowUp />
+          </motion.button>
+        </div>
+        <div className="col-start-1 row-start-2 flex justify-center">
+          <motion.button
+            onClick={() => handleDirectionChange({ x: -1, y: 0 })}
+            className="p-4 bg-gray-700/80 rounded-lg active:bg-green-500/50"
+            whileTap={{ scale: 0.9 }}
+          >
+            <ArrowLeft />
+          </motion.button>
+        </div>
+        <div className="col-start-2 row-start-2 flex justify-center">
+          <motion.button
+            onClick={resetGame}
+            className="p-4 bg-gray-700/80 rounded-full active:bg-red-500/50"
+            whileTap={{ scale: 0.9 }}
+          >
+            <RotateCcw size={16} />
+          </motion.button>
+        </div>
+        <div className="col-start-3 row-start-2 flex justify-center">
+          <motion.button
+            onClick={() => handleDirectionChange({ x: 1, y: 0 })}
+            className="p-4 bg-gray-700/80 rounded-lg active:bg-green-500/50"
+            whileTap={{ scale: 0.9 }}
+          >
+            <ArrowRight />
+          </motion.button>
+        </div>
+        <div className="col-start-2 row-start-3 flex justify-center">
+          <motion.button
+            onClick={() => handleDirectionChange({ x: 0, y: 1 })}
+            className="p-4 bg-gray-700/80 rounded-lg active:bg-green-500/50"
+            whileTap={{ scale: 0.9 }}
+          >
+            <ArrowDown />
+          </motion.button>
+        </div>
       </div>
     </motion.div>
-  )
+  );
 }

@@ -32,6 +32,7 @@ import {
   SiDocker,
   // SiAmazonaws, // This was problematic, will use FaAws
   SiVercel,
+  SiSupabase,
 } from "react-icons/si";
 
 // Import from Font Awesome for alternatives and general icons
@@ -202,6 +203,13 @@ export default function SkillsSection() {
       category: "tools",
       level: 80,
       color: "#000000",
+    },
+    {
+      name: "Supabase",
+      icon: SiSupabase,
+      category: "backend",
+      level: 72,
+      color: "#3ECF8E",
     },
   ];
 

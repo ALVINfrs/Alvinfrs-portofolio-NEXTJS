@@ -127,6 +127,25 @@ export default function ProjectsSection() {
       tech: ["Next.js", "Express.js", "MySQL", "Midtrans", "Tailwind CSS"],
       category: "fullstack",
     },
+    {
+      id: 10,
+      title: "Ngestream",
+      description:
+        "Netflix clone built with Next.js and TypeScript. Features include user authentication via Supabase (magic link and Google OAuth), categorized movie pages (Indonesian, Anime, Korean Drama, etc.), trending section, search functionality, subscriptions, likes, watchlist, and comment system.",
+      image: "/Images/projects/Ngestream.png", // Ganti sesuai path gambar kamu
+      link: "https://Ngestream.vercel.app/", // Ganti jika sudah dideploy
+      github: "https://github.com/ALVINfrs/Ngestream", // Ganti jika frontend/backend terpisah
+      tags: ["fullstack", "nextjs", "supabase", "postgresql", "typescript"],
+      tech: [
+        "Next.js",
+        "TypeScript",
+        "Supabase",
+        "PostgreSQL",
+        "ShadCN UI",
+        "Tailwind CSS",
+      ],
+      category: "fullstack",
+    },
   ];
 
   const filters = [
