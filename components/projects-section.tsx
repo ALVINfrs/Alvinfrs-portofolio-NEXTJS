@@ -10,6 +10,7 @@ import {
   Database,
   Globe,
   Server,
+  Star,
 } from "lucide-react";
 
 export default function ProjectsSection() {
@@ -124,8 +125,16 @@ export default function ProjectsSection() {
       link: "https://caffeine-fullstack-fix.vercel.app/", // isi link deploy jika sudah ada, misalnya Vercel
       github: "https://github.com/ALVINfrs/caffeine-fullstack-fix", // atau repositori khususnya jika terpisah frontend/backend
       tags: ["fullstack", "nextjs", "express", "mysql"],
-      tech: ["Next.js", "Express.js", "MySQL", "Midtrans", "Tailwind CSS"],
+      tech: [
+        "Next.js",
+        "Express.js",
+        "MySQL",
+        "Midtrans",
+        "Tailwind CSS",
+        "Typescript",
+      ],
       category: "fullstack",
+      featured: true,
     },
     {
       id: 10,
@@ -145,20 +154,47 @@ export default function ProjectsSection() {
         "Tailwind CSS",
       ],
       category: "fullstack",
+      featured: true,
+    },
+    {
+      id: 11,
+      title: "Kardiologiku Landing Page",
+      description:
+        "A comprehensive educational website for arrhythmia, offering features like symptom monitoring, doctor consultations, and detailed medication information. Built with modern tools like React, Vite, and Shadcn UI for a clean and responsive user experience.",
+      image: "/Images/projects/Project10.png", // Remember to change this to the correct image path
+      link: "https://kardiologiku-landing-page.vercel.app",
+      github: "https://github.com/ALVINfrs/Kardiologiku-Landing-Page",
+      tags: ["frontend", "react", "vite", "typescript", "shadcn", "tailwind"],
+      tech: [
+        "React",
+        "Vite",
+        "TypeScript",
+        "Local Storage",
+        "Shadcn UI",
+        "Tailwind CSS",
+      ],
+      category: "frontend",
+      featured: true,
     },
   ];
 
   const filters = [
+    { id: "featured", label: "Featured", icon: Star },
     { id: "all", label: "All Projects", icon: Globe },
     { id: "frontend", label: "Frontend", icon: Code2 },
     { id: "backend", label: "Backend", icon: Server },
     { id: "fullstack", label: "Full Stack", icon: Database },
   ];
 
-  const filteredProjects =
-    activeFilter === "all"
-      ? projects
-      : projects.filter((project) => project.category === activeFilter);
+  const filteredProjects = projects.filter((project) => {
+    if (activeFilter === "featured") {
+      return project.featured;
+    }
+    if (activeFilter === "all") {
+      return true;
+    }
+    return project.category === activeFilter;
+  });
 
   return (
     <section id="projects" className="py-20 relative">
