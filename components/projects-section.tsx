@@ -158,7 +158,7 @@ export default function ProjectsSection() {
     },
     {
       id: 11,
-      title: "Kardiologiku Landing Page",
+      title: "Kardiologiku ",
       description:
         "A comprehensive educational website for arrhythmia, offering features like symptom monitoring, doctor consultations, and detailed medication information. Built with modern tools like React, Vite, and Shadcn UI for a clean and responsive user experience.",
       image: "/Images/projects/Project10.png",
