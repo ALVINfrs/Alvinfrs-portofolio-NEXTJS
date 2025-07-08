@@ -15,7 +15,7 @@ import {
 
 export default function ProjectsSection() {
   const [selectedProject, setSelectedProject] = useState<number | null>(null);
-  const [activeFilter, setActiveFilter] = useState("all");
+  const [activeFilter, setActiveFilter] = useState("featured"); // Start with featured projects
   const containerRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(containerRef, { once: false, amount: 0.1 });
 
@@ -122,8 +122,8 @@ export default function ProjectsSection() {
       description:
         "Fullstack online coffee shop built with Next.js and Express.js. Features include user panel with reservation management, order history, e-receipt printing, and integrated Midtrans payment gateway.",
       image: "/Images/projects/Project9.png",
-      link: "https://caffeine-fullstack-fix.vercel.app/", // isi link deploy jika sudah ada, misalnya Vercel
-      github: "https://github.com/ALVINfrs/caffeine-fullstack-fix", // atau repositori khususnya jika terpisah frontend/backend
+      link: "https://caffeine-fullstack-fix.vercel.app/",
+      github: "https://github.com/ALVINfrs/caffeine-fullstack-fix",
       tags: ["fullstack", "nextjs", "express", "mysql"],
       tech: [
         "Next.js",
@@ -140,10 +140,10 @@ export default function ProjectsSection() {
       id: 10,
       title: "Ngestream",
       description:
-        "Netflix clone built with Next.js and TypeScript. Features include user authentication via Supabase (magic link and Google OAuth), categorized movie pages (Indonesian, Anime, Korean Drama, etc.), trending section, search functionality, subscriptions, likes, watchlist, and comment system.",
-      image: "/Images/projects/Ngestream.png", // Ganti sesuai path gambar kamu
-      link: "https://Ngestream.vercel.app/", // Ganti jika sudah dideploy
-      github: "https://github.com/ALVINfrs/Ngestream", // Ganti jika frontend/backend terpisah
+        "Netflix clone built with Next.js and TypeScript. Features include user authentication via Supabase (magic link and Google OAuth), categorized movie pages, trending section, search functionality, subscriptions, likes, watchlist, and comment system.",
+      image: "/Images/projects/Ngestream.png",
+      link: "https://Ngestream.vercel.app/",
+      github: "https://github.com/ALVINfrs/Ngestream",
       tags: ["fullstack", "nextjs", "supabase", "postgresql", "typescript"],
       tech: [
         "Next.js",
@@ -161,7 +161,7 @@ export default function ProjectsSection() {
       title: "Kardiologiku Landing Page",
       description:
         "A comprehensive educational website for arrhythmia, offering features like symptom monitoring, doctor consultations, and detailed medication information. Built with modern tools like React, Vite, and Shadcn UI for a clean and responsive user experience.",
-      image: "/Images/projects/Project10.png", // Remember to change this to the correct image path
+      image: "/Images/projects/Project10.png",
       link: "https://kardiologiku-landing-page.vercel.app",
       github: "https://github.com/ALVINfrs/Kardiologiku-Landing-Page",
       tags: ["frontend", "react", "vite", "typescript", "shadcn", "tailwind"],
@@ -196,6 +196,41 @@ export default function ProjectsSection() {
     return project.category === activeFilter;
   });
 
+  // Animation variants for project cards
+  const cardVariants = {
+    hidden: { opacity: 0, y: 50, scale: 0.95 },
+    visible: (i: number) => ({
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: {
+        delay: i * 0.1,
+        duration: 0.5,
+        ease: "easeOut",
+      },
+    }),
+    exit: {
+      opacity: 0,
+      y: -20,
+      scale: 0.95,
+      transition: { duration: 0.3 },
+    },
+  };
+
+  // Animation variants for filter buttons
+  const filterVariants = {
+    hidden: { opacity: 0, x: -20 },
+    visible: (i: number) => ({
+      opacity: 1,
+      x: 0,
+      transition: {
+        delay: i * 0.1,
+        duration: 0.4,
+        ease: "easeOut",
+      },
+    }),
+  };
+
   return (
     <section id="projects" className="py-20 relative">
       <motion.div
@@ -203,14 +238,14 @@ export default function ProjectsSection() {
         className="container mx-auto px-4 relative z-10"
         initial={{ opacity: 0 }}
         animate={isInView ? { opacity: 1 } : { opacity: 0 }}
-        transition={{ duration: 0.5 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
       >
         <div className="text-center mb-12">
           <motion.h2
             className="text-3xl md:text-4xl font-bold mb-4 inline-block"
-            initial={{ y: 50 }}
-            animate={isInView ? { y: 0 } : { y: 50 }}
-            transition={{ duration: 0.5 }}
+            initial={{ y: 50, opacity: 0 }}
+            animate={isInView ? { y: 0, opacity: 1 } : { y: 50, opacity: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
           >
             <span className="text-green-400">&lt;</span>
             <span className="text-white">Projects</span>
@@ -221,29 +256,33 @@ export default function ProjectsSection() {
             className="h-1 w-20 bg-green-500 mx-auto mb-4"
             initial={{ width: 0 }}
             animate={isInView ? { width: 80 } : { width: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
+            transition={{ duration: 0.8, ease: "easeOut", delay: 0.3 }}
           />
         </div>
 
         {/* Filter Tabs */}
         <motion.div
           className="flex flex-wrap justify-center gap-3 mb-10"
-          initial={{ y: 20, opacity: 0 }}
-          animate={isInView ? { y: 0, opacity: 1 } : { y: 20, opacity: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
         >
-          {filters.map((filter) => {
+          {filters.map((filter, index) => {
             const IconComponent = filter.icon;
             return (
               <motion.button
                 key={filter.id}
+                custom={index}
+                variants={filterVariants}
                 className={`px-4 py-2 rounded-lg text-sm flex items-center gap-2 border transition-all duration-300 ${
                   activeFilter === filter.id
                     ? "bg-green-500 text-black border-green-500"
                     : "bg-gray-800/80 border-green-500/30 hover:bg-gray-700/80"
                 }`}
                 onClick={() => setActiveFilter(filter.id)}
-                whileHover={{ scale: 1.05 }}
+                whileHover={{
+                  scale: 1.05,
+                  boxShadow: "0 0 10px rgba(34, 197, 94, 0.3)",
+                }}
                 whileTap={{ scale: 0.95 }}
               >
                 <IconComponent size={16} />
@@ -260,13 +299,19 @@ export default function ProjectsSection() {
               <motion.div
                 key={project.id}
                 layoutId={`project-${project.id}`}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.3, delay: index * 0.1 }}
+                custom={index}
+                variants={cardVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
                 className="group cursor-pointer"
                 onClick={() => setSelectedProject(project.id)}
-                whileHover={{ y: -5 }}
+                whileHover={{
+                  y: -10,
+                  scale: 1.02,
+                  boxShadow: "0 10px 20px rgba(34, 197, 94, 0.2)",
+                }}
+                transition={{ duration: 0.3 }}
               >
                 <div className="bg-gray-800/80 backdrop-blur-sm rounded-xl border border-green-500/30 overflow-hidden h-full flex flex-col transition-all duration-300 group-hover:border-green-400 group-hover:shadow-lg group-hover:shadow-green-500/20">
                   <div className="relative h-48 overflow-hidden">
@@ -276,7 +321,12 @@ export default function ProjectsSection() {
                       fill
                       className="object-cover transition-transform duration-500 group-hover:scale-110"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"
+                      initial={{ opacity: 0 }}
+                      whileHover={{ opacity: 1 }}
+                      transition={{ duration: 0.3 }}
+                    />
                   </div>
 
                   <div className="p-4 flex-1 flex flex-col">
@@ -288,13 +338,19 @@ export default function ProjectsSection() {
                     </p>
 
                     <div className="flex flex-wrap gap-1 mb-3">
-                      {project.tech.map((tech) => (
-                        <span
+                      {project.tech.map((tech, techIndex) => (
+                        <motion.span
                           key={tech}
                           className="text-xs px-2 py-1 rounded bg-green-500/20 text-green-400"
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{
+                            duration: 0.3,
+                            delay: techIndex * 0.05,
+                          }}
                         >
                           {tech}
-                        </span>
+                        </motion.span>
                       ))}
                     </div>
 
@@ -305,7 +361,7 @@ export default function ProjectsSection() {
                           target="_blank"
                           rel="noopener noreferrer"
                           className="p-2 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors"
-                          whileHover={{ scale: 1.1 }}
+                          whileHover={{ scale: 1.1, rotate: 5 }}
                           onClick={(e) => e.stopPropagation()}
                         >
                           <Github size={16} />
@@ -317,7 +373,7 @@ export default function ProjectsSection() {
                           target="_blank"
                           rel="noopener noreferrer"
                           className="p-2 bg-green-600 rounded-lg hover:bg-green-700 transition-colors"
-                          whileHover={{ scale: 1.1 }}
+                          whileHover={{ scale: 1.1, rotate: -5 }}
                           onClick={(e) => e.stopPropagation()}
                         >
                           <ExternalLink size={16} />
@@ -330,6 +386,28 @@ export default function ProjectsSection() {
             ))}
           </AnimatePresence>
         </motion.div>
+
+        {/* See More Button */}
+        {activeFilter === "featured" && (
+          <motion.div
+            className="text-center mt-10"
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
+          >
+            <motion.button
+              className="px-6 py-3 rounded-lg text-sm bg-green-500 text-black border border-green-500 hover:bg-green-600 transition-all duration-300"
+              onClick={() => setActiveFilter("all")}
+              whileHover={{
+                scale: 1.05,
+                boxShadow: "0 0 10px rgba(34, 197, 94, 0.3)",
+              }}
+              whileTap={{ scale: 0.95 }}
+            >
+              See More Projects
+            </motion.button>
+          </motion.div>
+        )}
       </motion.div>
     </section>
   );
