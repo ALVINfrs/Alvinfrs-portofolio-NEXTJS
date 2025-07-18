@@ -162,7 +162,7 @@ export default function ProjectsSection() {
       description:
         "A comprehensive educational website for arrhythmia, offering features like symptom monitoring, doctor consultations, and detailed medication information. Built with modern tools like React, Vite, and Shadcn UI for a clean and responsive user experience.",
       image: "/Images/projects/Project10.png",
-      link: "https://kardiologiku-landing-page.vercel.app",
+      link: "https://kardiologiku.vercel.app",
       github: "https://github.com/ALVINfrs/Kardiologiku-Landing-Page",
       tags: ["frontend", "react", "vite", "typescript", "shadcn", "tailwind"],
       tech: [

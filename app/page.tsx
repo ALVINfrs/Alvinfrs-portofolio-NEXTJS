@@ -1,18 +1,19 @@
-import Hero from "@/components/hero"
-import AboutSection from "@/components/about-section"
-import SkillsSection from "@/components/skills-section"
-import ProjectsSection from "@/components/projects-section"
-import ContactSection from "@/components/contact-section"
-import SocialSidebar from "@/components/social-sidebar"
-import IdCard from "@/components/id-card"
-import MiniGames from "@/components/mini-games"
-import CertificatesSection from "@/components/certificates-section"
-import Footer from "@/components/footer"
-import CodeBackground from "@/components/code-background"
-import TerminalBackground from "@/components/terminal-background"
-import DevStats from "@/components/dev-stats"
-import GitCommitHistory from "@/components/git-commit-history"
-import ApiEndpoints from "@/components/api-endpoints"
+import Hero from "@/components/hero";
+import AboutSection from "@/components/about-section";
+import SkillsSection from "@/components/skills-section";
+import ProjectsSection from "@/components/projects-section";
+import ContactSection from "@/components/contact-section";
+import SocialSidebar from "@/components/social-sidebar";
+import IdCard from "@/components/id-card";
+import MiniGames from "@/components/mini-games";
+import CertificatesSection from "@/components/certificates-section";
+import Footer from "@/components/footer";
+import CodeBackground from "@/components/code-background";
+import TerminalBackground from "@/components/terminal-background";
+import DevStats from "@/components/dev-stats";
+import GitCommitHistory from "@/components/git-commit-history";
+import ApiEndpoints from "@/components/api-endpoints";
+import InteractiveGitGraph from "@/components/InteractiveGitGraph";
 
 export default function Home() {
   return (
@@ -25,6 +26,7 @@ export default function Home() {
         <DevStats />
         <AboutSection />
         <SkillsSection />
+        <InteractiveGitGraph username="ALVINfrs" />
         <GitCommitHistory />
         <ProjectsSection />
         <ApiEndpoints />
@@ -35,5 +37,5 @@ export default function Home() {
         <Footer />
       </div>
     </div>
-  )
+  );
 }
