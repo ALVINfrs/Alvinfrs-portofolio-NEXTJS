@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import Cursor from "@/components/magicui/cursor";
 export const metadata: Metadata = {
   title: "Alvin Faris Portfolio", // Contoh: Ganti dengan title yang lebih sesuai
   description:
@@ -14,7 +15,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <Cursor />
+        {children}
+      </body>
     </html>
   );
 }
