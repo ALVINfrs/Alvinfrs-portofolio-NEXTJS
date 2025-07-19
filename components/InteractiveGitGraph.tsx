@@ -10,29 +10,24 @@ import {
 } from "framer-motion";
 import { Github, Loader2, AlertTriangle, ArrowRight } from "lucide-react";
 
-// Tipe untuk data kontribusi harian
 type DayContribution = {
   date: string;
   contributionCount: number;
   color: string;
 };
 
-// Props untuk komponen utama
 type GitGraphProps = {
   username: string;
 };
 
-// Komponen untuk setiap kotak hari
 function DaySquare({ day }: { day: DayContribution }) {
   const [showTooltip, setShowTooltip] = useState(false);
 
-  // Mendapatkan level kontribusi (0-4) dari warna
   const levelMatch = day.color.match(/data-level-(\d+)/);
   const level = levelMatch ? parseInt(levelMatch[1], 10) : 0;
 
-  // Menggunakan warna dari GitHub secara langsung
   const colorMap: { [key: string]: string } = {
-    "#ebedf0": "#2d333b", // Warna default untuk nol kontribusi
+    "#ebedf0": "#2d333b",
     "#9be9a8": "#0e4429",
     "#40c463": "#006d32",
     "#30a14e": "#26a641",
@@ -52,7 +47,6 @@ function DaySquare({ day }: { day: DayContribution }) {
         transition: { type: "spring", stiffness: 400, damping: 15 },
       }}
     >
-      {/* Lapisan 3D untuk memberikan efek ketinggian */}
       <motion.div
         className="absolute w-full h-full rounded-sm"
         style={{
@@ -61,8 +55,6 @@ function DaySquare({ day }: { day: DayContribution }) {
           boxShadow: `0 0 8px ${level > 0 ? displayColor : "transparent"}`,
         }}
       />
-
-      {/* Tooltip yang lebih informatif */}
       <AnimatePresence>
         {showTooltip && (
           <motion.div
@@ -70,7 +62,7 @@ function DaySquare({ day }: { day: DayContribution }) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.9 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className="absolute bottom-full mb-3 left-1/2 -translate-x-1/2 bg-gray-950 border border-green-500/30 text-white text-xs px-3 py-1.5 rounded-lg shadow-xl whitespace-nowrap z-50 pointer-events-none"
+            className="absolute bottom-full mb-3 left-1/2 -translate-x-1/2 bg-gray-950 border border-green-500/30 text-white text-xs px-3 py-1.5 rounded-lg shadow-xl whitespace-nowrap z-50 pointer-events-none max-w-[90vw] sm:max-w-none"
           >
             <span className="font-bold text-green-400">
               {day.contributionCount} contributions
@@ -88,7 +80,6 @@ function DaySquare({ day }: { day: DayContribution }) {
   );
 }
 
-// Komponen utama
 export default function InteractiveGitGraph({ username }: GitGraphProps) {
   const [contributions, setContributions] = useState<DayContribution[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -119,7 +110,6 @@ export default function InteractiveGitGraph({ username }: GitGraphProps) {
     fetchContributions();
   }, [username]);
 
-  // Gunakan useSpring untuk animasi yang lebih halus saat mouse meninggalkan komponen
   const springConfig = { stiffness: 150, damping: 20 };
   const rotateX = useSpring(
     useTransform(mouseY, [0, 400], [20, -20]),
@@ -132,8 +122,7 @@ export default function InteractiveGitGraph({ username }: GitGraphProps) {
 
   return (
     <section className="relative py-20 overflow-hidden">
-      <div className="container mx-auto px-4">
-        {/* === DESKRIPSI BARU YANG LEBIH DETAIL === */}
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12 max-w-4xl mx-auto">
           <motion.h2
             className="text-3xl md:text-4xl font-bold mb-4 inline-block"
@@ -179,10 +168,9 @@ export default function InteractiveGitGraph({ username }: GitGraphProps) {
             mouseX.set(Infinity);
             mouseY.set(Infinity);
           }}
-          className="w-full bg-gray-900/50 backdrop-blur-sm rounded-xl border border-green-500/20 p-8 flex items-center justify-center min-h-[350px] relative overflow-hidden"
+          className="w-full bg-gray-900/50 backdrop-blur-sm rounded-xl border border-green-500/20 p-4 sm:p-8 flex items-center justify-center min-h-[350px] relative overflow-x-auto"
           style={{ perspective: "2000px" }}
         >
-          {/* Efek glow di background */}
           <motion.div
             className="absolute w-[600px] h-[300px] bg-green-500/10 rounded-full blur-3xl"
             style={{
@@ -215,7 +203,7 @@ export default function InteractiveGitGraph({ username }: GitGraphProps) {
             ) : (
               <motion.div
                 style={{ transformStyle: "preserve-3d", rotateX, rotateY }}
-                className="grid grid-flow-col grid-rows-7 gap-1.5"
+                className="grid grid-flow-col grid-rows-7 gap-1.5 min-w-[720px]"
               >
                 {contributions.map((day) => (
                   <DaySquare key={day.date} day={day} />
@@ -225,7 +213,6 @@ export default function InteractiveGitGraph({ username }: GitGraphProps) {
           </AnimatePresence>
         </div>
 
-        {/* === CALL TO ACTION BARU === */}
         <motion.div
           className="text-center mt-12"
           initial={{ y: 20, opacity: 0 }}
