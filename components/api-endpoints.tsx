@@ -1,309 +1,260 @@
-"use client"
+// components/ApiPlayground.tsx
+"use client";
 
-import { useRef, useState } from "react"
-import { motion, useInView } from "framer-motion"
-import { Server, Database, Shield, Zap, CheckCircle, AlertCircle } from "lucide-react"
+import { useState, FC } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+// Perbaikan 2: Tambahkan CheckCircle di sini
+import {
+  Server,
+  Send,
+  Loader2,
+  ChevronsRight,
+  Copy,
+  CheckCircle,
+} from "lucide-react";
 
-export default function ApiEndpoints() {
-  const containerRef = useRef<HTMLDivElement>(null)
-  const isInView = useInView(containerRef, { once: false, amount: 0.2 })
-  const [selectedEndpoint, setSelectedEndpoint] = useState<number | null>(null)
+const endpoints = [
+  {
+    method: "GET",
+    path: "/api/profile",
+    description: "Fetches my professional profile data.",
+  },
+  {
+    method: "GET",
+    path: "/api/projects",
+    description: "Lists my featured deployed projects.",
+  },
+  {
+    method: "GET",
+    path: "/api/skills",
+    description: "Retrieves my technical skill set.",
+  },
+];
 
-  const endpoints = [
-    {
-      id: 1,
-      method: "GET",
-      path: "/api/users",
-      description: "Retrieve all users with pagination",
-      status: "active",
-      responseTime: "45ms",
-      lastTested: "2 mins ago",
-      auth: true,
-      example: {
-        request: "GET /api/users?page=1&limit=10",
-        response: {
-          users: [{ id: 1, name: "John Doe", email: "john@example.com" }],
-          pagination: { page: 1, limit: 10, total: 100 },
-        },
-      },
-    },
-    {
-      id: 2,
-      method: "POST",
-      path: "/api/auth/login",
-      description: "User authentication endpoint",
-      status: "active",
-      responseTime: "120ms",
-      lastTested: "5 mins ago",
-      auth: false,
-      example: {
-        request: "POST /api/auth/login",
-        response: {
-          token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-          user: { id: 1, name: "John Doe" },
-        },
-      },
-    },
-    {
-      id: 3,
-      method: "PUT",
-      path: "/api/projects/:id",
-      description: "Update project information",
-      status: "active",
-      responseTime: "89ms",
-      lastTested: "1 min ago",
-      auth: true,
-      example: {
-        request: "PUT /api/projects/123",
-        response: {
-          id: 123,
-          title: "Updated Project",
-          status: "completed",
-        },
-      },
-    },
-    {
-      id: 4,
-      method: "DELETE",
-      path: "/api/users/:id",
-      description: "Delete user account",
-      status: "maintenance",
-      responseTime: "N/A",
-      lastTested: "1 hour ago",
-      auth: true,
-      example: {
-        request: "DELETE /api/users/123",
-        response: {
-          message: "User deleted successfully",
-        },
-      },
-    },
-  ]
+// Sub-komponen untuk Syntax Highlighting JSON
+const JsonSyntaxHighlighter: FC<{ data: any }> = ({ data }) => {
+  const highlight = (json: any, indent = 1): JSX.Element[] => {
+    // Perbaikan 1: Ubah tipe 'key' menjadi string
+    return Object.keys(json).map((key: string) => {
+      const value = json[key];
+      const isObject = typeof value === "object" && value !== null;
+      const indentStyle = { paddingLeft: `${indent * 1.5}rem` };
 
-  const getMethodColor = (method: string) => {
-    switch (method) {
-      case "GET":
-        return "text-green-400 bg-green-500/20"
-      case "POST":
-        return "text-blue-400 bg-blue-500/20"
-      case "PUT":
-        return "text-yellow-400 bg-yellow-500/20"
-      case "DELETE":
-        return "text-red-400 bg-red-500/20"
-      default:
-        return "text-gray-400 bg-gray-500/20"
+      return (
+        <div key={key} style={indentStyle}>
+          <span className="text-purple-400">"{key}"</span>
+          <span className="text-gray-400">: </span>
+          {isObject ? (
+            <>
+              <span className="text-gray-400">
+                {Array.isArray(value) ? "[" : "{"}
+              </span>
+              {highlight(value, indent + 1)}
+              <span
+                className="text-gray-400"
+                style={{ paddingLeft: `${indent * 1.5}rem` }}
+              >
+                {Array.isArray(value) ? "]" : "}"}
+              </span>
+            </>
+          ) : (
+            <span
+              className={
+                typeof value === "string" ? "text-green-300" : "text-yellow-300"
+              }
+            >
+              {typeof value === "string" ? `"${value}"` : String(value)}
+            </span>
+          )}
+        </div>
+      );
+    });
+  };
+
+  return (
+    <div className="text-sm">
+      <span className="text-gray-400">{"{"}</span>
+      {highlight(data)}
+      <span className="text-gray-400">{"}"}</span>
+    </div>
+  );
+};
+
+export default function ApiPlayground() {
+  const [selectedEndpoint, setSelectedEndpoint] = useState(endpoints[0]);
+  const [response, setResponse] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const handleSendRequest = async () => {
+    setIsLoading(true);
+    setResponse(null);
+    setCopied(false);
+    try {
+      const res = await fetch(selectedEndpoint.path);
+      const data = await res.json();
+      setResponse({ status: res.status, ok: res.ok, data });
+    } catch (error) {
+      setResponse({
+        status: 500,
+        ok: false,
+        data: { error: "Failed to connect to the server." },
+      });
     }
-  }
+    setIsLoading(false);
+  };
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case "active":
-        return <CheckCircle className="text-green-400" size={16} />
-      case "maintenance":
-        return <AlertCircle className="text-yellow-400" size={16} />
-      default:
-        return <AlertCircle className="text-red-400" size={16} />
+  const handleCopy = () => {
+    if (response) {
+      navigator.clipboard.writeText(JSON.stringify(response.data, null, 2));
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
     }
-  }
+  };
 
   return (
     <section className="py-20 relative">
-      <div className="absolute inset-0 bg-gradient-to-b from-gray-900/0 via-gray-900/80 to-gray-900/0 z-0"></div>
-
-      <motion.div
-        ref={containerRef}
-        className="container mx-auto px-4 relative z-10"
-        initial={{ opacity: 0 }}
-        animate={isInView ? { opacity: 1 } : { opacity: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <div className="text-center mb-12">
+      <div className="container mx-auto px-4">
+        <div className="text-center mb-16 max-w-3xl mx-auto">
           <motion.h2
-            className="text-3xl md:text-4xl font-bold mb-4 inline-block"
-            initial={{ y: 50 }}
-            animate={isInView ? { y: 0 } : { y: 50 }}
-            transition={{ duration: 0.5 }}
+            className="text-3xl md:text-4xl font-bold mb-4"
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
           >
             <span className="text-green-400">&lt;</span>
-            <span className="text-white">API Endpoints</span>
+            <span className="text-white">Live API Playground</span>
             <span className="text-green-400">/&gt;</span>
           </motion.h2>
-
-          <motion.div
-            className="h-1 w-20 bg-green-500 mx-auto"
-            initial={{ width: 0 }}
-            animate={isInView ? { width: 80 } : { width: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-          />
-
           <motion.p
-            className="text-gray-400 mt-4 max-w-2xl mx-auto"
-            initial={{ opacity: 0 }}
-            animate={isInView ? { opacity: 1 } : { opacity: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
+            className="text-gray-400 text-lg"
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1, transition: { delay: 0.2 } }}
           >
-            RESTful API endpoints and backend services
+            Why just read about my backend skills? Interact with my portfolio's
+            own live API. Select an endpoint, send a request, and see the
+            real-time JSON response.
           </motion.p>
         </div>
 
-        <div className="max-w-6xl mx-auto">
-          {/* API Dashboard Header */}
+        <div className="max-w-6xl mx-auto flex flex-col lg:flex-row gap-6">
+          {/* Kiri: Daftar Endpoint */}
           <motion.div
-            className="bg-gray-800/80 backdrop-blur-sm rounded-t-lg border border-green-500/30 p-4"
-            initial={{ y: 20, opacity: 0 }}
-            animate={isInView ? { y: 0, opacity: 1 } : { y: 20, opacity: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
+            className="lg:w-1/3"
+            initial={{ x: -20, opacity: 0 }}
+            animate={{ x: 0, opacity: 1, transition: { delay: 0.4 } }}
           >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Server className="text-green-400" size={24} />
-                <span className="text-white font-bold">API Dashboard</span>
-                <span className="px-2 py-1 bg-green-500/20 text-green-400 rounded text-sm">Live</span>
-              </div>
-              <div className="flex items-center gap-4 text-sm text-gray-400">
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                  <span>4 Active</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                  <span>1 Maintenance</span>
-                </div>
-              </div>
+            <h3 className="text-white font-semibold mb-4 text-lg flex items-center gap-2">
+              <ChevronsRight size={20} className="text-green-400" /> Select an
+              Endpoint
+            </h3>
+            <div className="space-y-3">
+              {endpoints.map((ep) => (
+                <motion.button
+                  key={ep.path}
+                  onClick={() => {
+                    setSelectedEndpoint(ep);
+                    setResponse(null);
+                  }}
+                  className={`w-full text-left p-4 rounded-lg border-2 transition-all duration-200 ${
+                    selectedEndpoint.path === ep.path
+                      ? "bg-green-500/10 border-green-500 shadow-lg shadow-green-500/10"
+                      : "bg-gray-800/50 border-gray-700 hover:bg-gray-700/50 hover:border-gray-500"
+                  }`}
+                  whileHover={{ scale: 1.03 }}
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="font-mono text-xs bg-green-900 text-green-300 px-2 py-0.5 rounded">
+                      {ep.method}
+                    </span>
+                    <span className="text-white font-mono text-sm">
+                      {ep.path}
+                    </span>
+                  </div>
+                  <p className="text-gray-400 text-xs mt-2">{ep.description}</p>
+                </motion.button>
+              ))}
             </div>
           </motion.div>
 
-          {/* Endpoints List */}
-          <div className="bg-gray-900/80 backdrop-blur-sm rounded-b-lg border-x border-b border-green-500/30">
-            {endpoints.map((endpoint, index) => (
-              <motion.div
-                key={endpoint.id}
-                className="border-b border-green-500/20 last:border-b-0"
-                initial={{ x: -50, opacity: 0 }}
-                animate={isInView ? { x: 0, opacity: 1 } : { x: -50, opacity: 0 }}
-                transition={{ duration: 0.5, delay: 0.1 * index }}
-              >
-                <div
-                  className="p-6 cursor-pointer hover:bg-gray-800/50 transition-all duration-200"
-                  onClick={() => setSelectedEndpoint(selectedEndpoint === endpoint.id ? null : endpoint.id)}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <span
-                        className={`px-3 py-1 rounded font-mono text-sm font-bold ${getMethodColor(endpoint.method)}`}
-                      >
-                        {endpoint.method}
-                      </span>
-                      <span className="text-white font-mono">{endpoint.path}</span>
-                      <span className="text-gray-400 text-sm">{endpoint.description}</span>
-                    </div>
-
-                    <div className="flex items-center gap-4">
-                      <div className="flex items-center gap-2">
-                        {getStatusIcon(endpoint.status)}
-                        <span className="text-sm text-gray-400">{endpoint.responseTime}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        {endpoint.auth && <Shield className="text-yellow-400" size={16} />}
-                        <Zap className="text-green-400" size={16} />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="mt-2 text-xs text-gray-500">Last tested: {endpoint.lastTested}</div>
-
-                  {/* Expanded Details */}
-                  {selectedEndpoint === endpoint.id && (
-                    <motion.div
-                      className="mt-6 pt-6 border-t border-green-500/20"
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.3 }}
-                    >
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {/* Request Example */}
-                        <div>
-                          <h4 className="text-green-400 font-bold mb-3 flex items-center gap-2">
-                            <Database size={16} />
-                            Request Example
-                          </h4>
-                          <div className="bg-gray-800 rounded-lg p-4 font-mono text-sm">
-                            <div className="text-gray-400 mb-2">// Request</div>
-                            <div className="text-green-300">{endpoint.example.request}</div>
-                          </div>
-                        </div>
-
-                        {/* Response Example */}
-                        <div>
-                          <h4 className="text-green-400 font-bold mb-3 flex items-center gap-2">
-                            <CheckCircle size={16} />
-                            Response Example
-                          </h4>
-                          <div className="bg-gray-800 rounded-lg p-4 font-mono text-sm">
-                            <div className="text-gray-400 mb-2">// Response</div>
-                            <pre className="text-green-300 whitespace-pre-wrap">
-                              {JSON.stringify(endpoint.example.response, null, 2)}
-                            </pre>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Additional Info */}
-                      <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div className="bg-gray-800/50 rounded-lg p-3">
-                          <div className="text-gray-400 text-xs mb-1">Authentication</div>
-                          <div className="text-white text-sm">
-                            {endpoint.auth ? "Required (Bearer Token)" : "Not Required"}
-                          </div>
-                        </div>
-
-                        <div className="bg-gray-800/50 rounded-lg p-3">
-                          <div className="text-gray-400 text-xs mb-1">Rate Limit</div>
-                          <div className="text-white text-sm">100 req/min</div>
-                        </div>
-
-                        <div className="bg-gray-800/50 rounded-lg p-3">
-                          <div className="text-gray-400 text-xs mb-1">Status</div>
-                          <div className="text-white text-sm capitalize">{endpoint.status}</div>
-                        </div>
-                      </div>
-                    </motion.div>
-                  )}
-                </div>
-              </motion.div>
-            ))}
-          </div>
-
-          {/* API Stats */}
+          {/* Kanan: Playground & Response */}
           <motion.div
-            className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-8"
-            initial={{ y: 30, opacity: 0 }}
-            animate={isInView ? { y: 0, opacity: 1 } : { y: 30, opacity: 0 }}
-            transition={{ duration: 0.5, delay: 0.8 }}
+            className="lg:w-2/3 bg-gray-900/80 rounded-xl border border-green-500/30 flex flex-col"
+            initial={{ x: 20, opacity: 0 }}
+            animate={{ x: 0, opacity: 1, transition: { delay: 0.6 } }}
           >
-            <div className="bg-gray-800/50 backdrop-blur-sm rounded-lg border border-green-500/30 p-4 text-center">
-              <div className="text-2xl font-bold text-green-400 mb-1">99.9%</div>
-              <div className="text-gray-400 text-sm">Uptime</div>
+            <div className="p-4 border-b border-green-500/20 flex justify-between items-center">
+              <div className="flex items-center gap-3">
+                <span className="font-mono text-sm bg-green-500/20 text-green-300 px-3 py-1 rounded">
+                  {selectedEndpoint.method}
+                </span>
+                <span className="text-white font-mono">
+                  {selectedEndpoint.path}
+                </span>
+              </div>
+              <motion.button
+                onClick={handleSendRequest}
+                disabled={isLoading}
+                className="flex items-center gap-2 bg-green-600 text-black px-4 py-2 rounded-lg hover:bg-green-500 transition-colors disabled:bg-gray-600 disabled:text-gray-400 font-bold"
+                whileTap={{ scale: 0.95 }}
+              >
+                {isLoading ? (
+                  <Loader2 className="animate-spin" size={18} />
+                ) : (
+                  <Send size={18} />
+                )}
+                {isLoading ? "Fetching..." : "Send Request"}
+              </motion.button>
             </div>
 
-            <div className="bg-gray-800/50 backdrop-blur-sm rounded-lg border border-green-500/30 p-4 text-center">
-              <div className="text-2xl font-bold text-green-400 mb-1">45ms</div>
-              <div className="text-gray-400 text-sm">Avg Response</div>
-            </div>
-
-            <div className="bg-gray-800/50 backdrop-blur-sm rounded-lg border border-green-500/30 p-4 text-center">
-              <div className="text-2xl font-bold text-green-400 mb-1">1.2M</div>
-              <div className="text-gray-400 text-sm">Requests/Day</div>
-            </div>
-
-            <div className="bg-gray-800/50 backdrop-blur-sm rounded-lg border border-green-500/30 p-4 text-center">
-              <div className="text-2xl font-bold text-green-400 mb-1">15</div>
-              <div className="text-gray-400 text-sm">Endpoints</div>
+            <div className="p-4 font-mono text-sm flex-grow min-h-[300px] relative overflow-auto">
+              <AnimatePresence>
+                {isLoading && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1, transition: { delay: 0.3 } }}
+                    className="absolute inset-0 flex items-center justify-center"
+                  >
+                    <Loader2 className="w-8 h-8 text-green-400/50 animate-spin" />
+                  </motion.div>
+                )}
+                {response && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                  >
+                    <div className="flex justify-between items-center mb-4">
+                      <p>
+                        Status:{" "}
+                        <span
+                          className={
+                            response.ok ? "text-green-400" : "text-red-400"
+                          }
+                        >
+                          {response.status}
+                        </span>
+                      </p>
+                      <button
+                        onClick={handleCopy}
+                        className="text-gray-400 hover:text-white transition-colors text-xs flex items-center gap-1"
+                      >
+                        {copied ? (
+                          <CheckCircle size={14} className="text-green-400" />
+                        ) : (
+                          <Copy size={14} />
+                        )}
+                        {copied ? "Copied!" : "Copy JSON"}
+                      </button>
+                    </div>
+                    <div className="bg-gray-950/50 p-4 rounded-lg">
+                      <JsonSyntaxHighlighter data={response.data} />
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </motion.div>
         </div>
-      </motion.div>
+      </div>
     </section>
-  )
+  );
 }
