@@ -34,7 +34,7 @@ export default function SocialSidebar() {
     },
     {
       Icon: SiLinkedin,
-      href: "https://www.linkedin.com/in/alvin-faris-89060a31b/",
+      href: "https://www.linkedin.com/in/alvinfrs/",
       label: "LinkedIn",
       hoverBgClass: "hover:bg-blue-600/20",
       iconColor: "#0A66C2",
