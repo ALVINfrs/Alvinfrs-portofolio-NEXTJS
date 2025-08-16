@@ -15,6 +15,7 @@ import GitCommitHistory from "@/components/git-commit-history";
 import ApiEndpoints from "@/components/api-endpoints";
 import InteractiveGitGraph from "@/components/InteractiveGitGraph";
 import InteractiveCLI from "@/components/InteractiveCLI";
+import DeveloperJourney from "@/components/DeveloperJourney";
 
 export default function Home() {
   return (
@@ -26,6 +27,7 @@ export default function Home() {
         <IdCard />
         <DevStats />
         <AboutSection />
+        <DeveloperJourney />
         <SkillsSection />
         <InteractiveGitGraph username="ALVINfrs" />
         <GitCommitHistory />
