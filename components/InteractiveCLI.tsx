@@ -207,11 +207,14 @@ export default function InteractiveCLI() {
   const [history, setHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [hasInteracted, setHasInteracted] = useState(false);
+
   const endOfLinesRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInput(e.target.value);
+    if (!hasInteracted) setHasInteracted(true);
   };
 
   const processCommand = useCallback(
@@ -284,13 +287,12 @@ export default function InteractiveCLI() {
     }
   };
 
+  // ⬇️ scroll hanya kalau user sudah mulai interaksi
   useEffect(() => {
-    endOfLinesRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [lines]);
-
-  useEffect(() => {
-    inputRef.current?.focus();
-  }, []);
+    if (hasInteracted) {
+      endOfLinesRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [lines, hasInteracted]);
 
   return (
     <section className="py-20 relative">
@@ -371,7 +373,6 @@ export default function InteractiveCLI() {
               autoCapitalize="off"
               autoCorrect="off"
               spellCheck="false"
-              autoFocus
             />
             {!isProcessing && (
               <div className="w-2 h-4 bg-green-400 animate-pulse" />
