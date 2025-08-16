@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { motion } from "framer-motion";
-import { Code2, Menu, X } from "lucide-react";
+import { Code2, Menu, X, Download } from "lucide-react";
 
 // Responsive Header Component
 const Header = () => {
@@ -287,14 +287,18 @@ export default function Hero() {
           )}
 
           {/* Explore My Work Button */}
+          {/* Tombol Aksi */}
           {typingComplete && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: typingComplete ? 2.5 : 4, duration: 0.8 }}
+              // PERBAIKAN: Menggunakan flexbox dengan gap dan z-index
+              className="relative z-10 mt-8 flex flex-wrap items-center justify-center gap-4"
             >
+              {/* Tombol Explore My Work */}
               <motion.button
-                className="mt-8 px-6 py-3 bg-green-500 text-black font-bold rounded-md hover:bg-green-400 transition-colors relative overflow-hidden group text-sm sm:text-base"
+                className="px-6 py-3 bg-green-500 text-black font-bold rounded-md hover:bg-green-400 transition-colors relative overflow-hidden group text-sm sm:text-base"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => {
@@ -307,6 +311,19 @@ export default function Hero() {
                 <span className="relative z-10">Explore My Work</span>
                 <span className="absolute inset-0 bg-gradient-to-r from-green-400 to-green-600 opacity-0 group-hover:opacity-100 transition-opacity"></span>
               </motion.button>
+
+              {/* === TOMBOL RESUME YANG DIPERBAIKI === */}
+              <motion.a
+                href="https://drive.google.com/file/d/1E4XBjIYwG3Mp1LVOzH8UUvXslmJ1j7M_/view?usp=sharing" // <-- PASTIKAN ANDA MENGGANTI INI
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 px-6 py-3 bg-gray-800/80 text-green-400 font-bold rounded-md border border-green-500/50 hover:bg-gray-700/80 hover:border-green-500 transition-all text-sm sm:text-base"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Download size={18} />
+                <span>Get My Resume</span>
+              </motion.a>
             </motion.div>
           )}
         </div>
